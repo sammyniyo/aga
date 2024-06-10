@@ -1,12 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import Vex from "vexflow";
-import Toolbar from "./Toolbar";
 
 const { Renderer, Stave, StaveNote } = Vex.Flow;
 
 const MusicSheetEditor = () => {
   const containerRef = useRef(null);
-  const [notes, setNotes] = useState([]);
 
   useEffect(() => {
     const renderer = new Renderer(containerRef.current, Renderer.Backends.SVG);
@@ -14,25 +12,30 @@ const MusicSheetEditor = () => {
     const context = renderer.getContext();
     const stave = new Stave(10, 40, 400);
     stave.addClef("treble").setContext(context).draw();
-    drawNotes(context, stave, notes);
-  }, [notes]);
 
-  const addNote = (note) => {
-    setNotes([...notes, note]);
-  };
+    const notes = [
+      new StaveNote({
+        keys: ["c/4"],
+        duration: "q",
+      }),
+      new StaveNote({
+        keys: ["d/4"],
+        duration: "q",
+      }),
+      new StaveNote({
+        keys: ["e/4"],
+        duration: "q",
+      }),
+      new StaveNote({
+        keys: ["f/4"],
+        duration: "q",
+      }),
+    ];
 
-  const drawNotes = (context, stave, notes) => {
-    context.clearRect(0, 0, 500, 200);
-    stave.setContext(context).draw();
     Vex.Flow.Formatter.FormatAndDraw(context, stave, notes);
-  };
+  }, []);
 
-  return (
-    <div>
-      <Toolbar onAddNote={addNote} />
-      <div ref={containerRef}></div>
-    </div>
-  );
+  return <div ref={containerRef}></div>;
 };
 
 export default MusicSheetEditor;

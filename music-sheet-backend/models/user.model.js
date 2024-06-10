@@ -1,16 +1,17 @@
-import { Schema as _Schema, model } from "mongoose";
-const Schema = _Schema;
+import { Schema, model } from "mongoose";
+import { hash } from "bcrypt";
 
-const userSchema = new Schema(
-  {
-    username: { type: String, required: true, unique: true, trim: true },
-    email: { type: String, required: true, unique: true, trim: true },
-    password: { type: String, required: true, minlength: 6 },
-  },
-  {
-    timestamps: true,
+const userSchema = new Schema({
+  username: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+});
+
+userSchema.pre("save", async function (next) {
+  if (this.isModified("password") || this.isNew) {
+    this.password = await hash(this.password, 10);
   }
-);
+  next();
+});
 
-const User = model("User", userSchema);
-export default User;
+export default model("User", userSchema);
